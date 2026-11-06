@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oracle EPM Automate Scripts | Uday Kumar Kotha</title>
+<style>
+  :root {
+    --bg:#0a0d16;--surface:#111827;--surface2:#1f2937;--surface3:#374151;
+    --border:#1e2a3a;--accent:#6366f1;--accent2:#22d3ee;--accent3:#10b981;
+    --accent4:#f59e0b;--text:#f1f5f9;--muted:#94a3b8;--muted2:#64748b;--code-bg:#0d1117;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;}
+
+  .hero{background:linear-gradient(135deg,#0f0c29 0%,#1a1a2e 40%,#0f3460 100%);
+    padding:60px 40px 50px;text-align:center;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse 60% 60% at 50% -10%,rgba(99,102,241,.25) 0%,transparent 70%);}
+  .hero-inner{position:relative;z-index:1;}
+  .badge{display:inline-block;background:var(--accent3);color:#fff;font-size:11px;font-weight:700;
+    letter-spacing:1.5px;text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:20px;}
+  .hero h1{font-size:clamp(26px,5vw,50px);font-weight:800;line-height:1.1;
+    background:linear-gradient(135deg,#fff 0%,var(--accent2) 60%,var(--accent3) 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:14px;}
+  .hero .sub{color:var(--muted);font-size:16px;max-width:620px;margin:0 auto 28px;}
+  .meta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .meta-pill{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+    border-radius:20px;padding:6px 16px;font-size:13px;color:var(--muted);}
+  .meta-pill strong{color:var(--text);}
+
+  .wrap{max-width:1100px;margin:0 auto;padding:40px 30px;}
+
+  .kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:16px;margin-bottom:40px;}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;}
+  .kpi-num{font-size:32px;font-weight:800;line-height:1;}
+  .kpi-lbl{font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-top:6px;}
+
+  .toc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:40px;}
+  .toc h3{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent);margin-bottom:16px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;}
+  .toc a{display:block;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);
+    border-radius:8px;color:var(--muted);font-size:13px;text-decoration:none;transition:all .2s;}
+  .toc a:hover{border-color:var(--accent);color:var(--text);}
+  .toc a .toc-num{color:var(--accent);font-weight:700;margin-right:6px;}
+
+  .section{margin-bottom:50px;}
+  .section-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;
+    padding-bottom:12px;border-bottom:2px solid var(--accent);}
+  .section-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;
+    justify-content:center;font-size:22px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);flex-shrink:0;}
+  .section-header h2{font-size:20px;font-weight:700;color:var(--accent2);}
+  .section-header .sh-sub{font-size:13px;color:var(--muted);}
+
+  .script-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    margin-bottom:24px;overflow:hidden;}
+  .script-header{background:var(--surface2);padding:14px 20px;display:flex;align-items:center;
+    gap:12px;border-bottom:1px solid var(--border);}
+  .script-num{background:var(--accent);color:#fff;font-size:11px;font-weight:800;
+    padding:3px 10px;border-radius:12px;flex-shrink:0;}
+  .script-name{font-size:15px;font-weight:700;color:var(--text);}
+  .script-desc{font-size:13px;color:var(--muted);margin-left:auto;}
+  .script-body{padding:20px;}
+  .script-body p{font-size:14px;color:var(--muted);margin-bottom:16px;}
+  .script-body ul{list-style:none;margin-bottom:16px;}
+  .script-body li{font-size:13px;color:var(--muted);padding:4px 0;padding-left:16px;position:relative;}
+  .script-body li::before{content:'▸';position:absolute;left:0;color:var(--accent2);}
+
+  .code-block{background:var(--code-bg);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px;}
+  .code-title{background:var(--surface2);padding:8px 16px;font-size:11px;font-weight:700;
+    color:var(--accent2);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;}
+  .file-badge{background:rgba(16,185,129,.15);color:var(--accent3);border:1px solid rgba(16,185,129,.3);
+    border-radius:8px;padding:2px 10px;font-size:11px;}
+  pre{padding:18px 20px;overflow-x:auto;}
+  code{font-family:'Cascadia Code','Consolas',monospace;font-size:13px;line-height:1.65;color:#a5f3fc;white-space:pre;}
+  .cm{color:#6b7280;font-style:italic;}
+  .kw{color:#c084fc;}
+  .str{color:#86efac;}
+  .var{color:#fbbf24;}
+  .cmd{color:#f9a8d4;}
+
+  .note{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-left:3px solid var(--accent4);
+    border-radius:6px;padding:12px 16px;margin-bottom:16px;}
+  .note p{font-size:13px;color:#fcd34d;margin:0;}
+
+  footer{text-align:center;padding:40px 20px;color:var(--muted2);font-size:12px;border-top:1px solid var(--border);}
+  @media(max-width:768px){.wrap{padding:24px 16px;}.script-desc{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="badge">EPM Automate</div>
+    <h1>Oracle EPM Automate<br>Script Library</h1>
+    <p class="sub">Production-ready shell scripts for automating Oracle EPM Cloud — authentication, pipelines, metadata, business rules, backups, and scheduled orchestration.</p>
+    <div class="meta-row">
+      <span class="meta-pill"><strong>Author:</strong> Uday Kumar Kotha</span>
+      <span class="meta-pill"><strong>Title:</strong> Consulting Manager</span>
+      <span class="meta-pill"><strong>Firm:</strong> Huron Consulting Group</span>
+      <span class="meta-pill"><strong>Email:</strong> ukotha@hcg.com</span>
+      <span class="meta-pill"><strong>Published:</strong> November 6, 2026</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-num" style="color:var(--accent)">15</div><div class="kpi-lbl">Scripts</div></div>
+    <div class="kpi"><div class="kpi-num" style="color:var(--accent2)">6</div><div class="kpi-lbl">Use Case Areas</div></div>
+    <div class="kpi"><div class="kpi-num" style="color:var(--accent3)">Windows<br><span style="font-size:16px">&amp; Linux</span></div><div class="kpi-lbl">Platform</div></div>
+    <div class="kpi"><div class="kpi-num" style="color:var(--accent4)">OCI</div><div class="kpi-lbl">Oracle Cloud</div></div>
+  </div>
+
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <div class="toc-grid">
+      <a href="#auth"><span class="toc-num">01</span>Authentication &amp; Setup</a>
+      <a href="#pipeline"><span class="toc-num">02</span>Pipeline Orchestration</a>
+      <a href="#metadata"><span class="toc-num">03</span>Metadata Management</a>
+      <a href="#rules"><span class="toc-num">04</span>Business Rule Execution</a>
+      <a href="#data"><span class="toc-num">05</span>Data Import &amp; Export</a>
+      <a href="#backup"><span class="toc-num">06</span>Backup &amp; Restore (LCM)</a>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       01 — AUTHENTICATION
+  ══════════════════════════════════════ -->
+  <div class="section" id="auth">
+    <div class="section-header">
+      <div class="section-icon">🔐</div>
+      <div>
+        <h2>Authentication &amp; Setup</h2>
+        <div class="sh-sub">Secure login, password encryption, and environment configuration</div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">01</span>
+        <span class="script-name">Encrypt Password</span>
+        <span class="script-desc">One-time setup — creates an encrypted .epw file</span>
+      </div>
+      <div class="script-body">
+        <p>EPM Automate requires an encrypted password file (.epw) for unattended script execution. Run this once to generate it. Never store plain-text passwords in scripts.</p>
+        <div class="code-block">
+          <div class="code-title">encrypt-password.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Encrypt your EPM Cloud password into a .epw file
+:: Run this once — the .epw file is used by all other scripts</span>
+
+<span class="kw">@echo off</span>
+<span class="kw">set</span> <span class="var">EPM_URL</span>=https://your-environment.epm.us-ashburn-1.ocs.oraclecloud.com
+<span class="kw">set</span> <span class="var">EPM_USER</span>=your_service_account@company.com
+<span class="kw">set</span> <span class="var">EPW_FILE</span>=C:\EPMScripts\epm_credentials.epw
+
+epmautomate encrypt <span class="str">YourPassword123</span> <span class="str">YourEncryptionKey</span> <span class="var">%EPW_FILE%</span>
+<span class="kw">echo</span> Password encrypted to: <span class="var">%EPW_FILE%</span></code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-title">encrypt-password.sh <span class="file-badge">Linux / Mac</span></div>
+          <pre><code><span class="cm">#!/bin/bash
+# Encrypt EPM Cloud password — run once per environment</span>
+EPM_URL=<span class="str">"https://your-environment.epm.us-ashburn-1.ocs.oraclecloud.com"</span>
+EPW_FILE=<span class="str">"/opt/epm/credentials.epw"</span>
+
+epmautomate encrypt <span class="str">"YourPassword"</span> <span class="str">"EncryptionKey"</span> <span class="var">$EPW_FILE</span>
+echo <span class="str">"EPW file created: $EPW_FILE"</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">02</span>
+        <span class="script-name">Login / Logout Wrapper</span>
+        <span class="script-desc">Reusable login block used across all scripts</span>
+      </div>
+      <div class="script-body">
+        <p>A reusable login pattern that reads environment variables for portability across dev/test/production pods.</p>
+        <div class="code-block">
+          <div class="code-title">login-wrapper.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Reusable login/logout wrapper
+:: Set these environment variables before running any EPM Automate script</span>
+
+<span class="kw">set</span> <span class="var">EPM_URL</span>=https://your-environment.epm.us-ashburn-1.ocs.oraclecloud.com
+<span class="kw">set</span> <span class="var">EPM_USER</span>=service_account@company.com
+<span class="kw">set</span> <span class="var">EPM_DOMAIN</span>=your_identity_domain
+<span class="kw">set</span> <span class="var">EPW_FILE</span>=C:\EPMScripts\epm_credentials.epw
+
+<span class="cm">:: LOGIN</span>
+epmautomate login <span class="var">%EPM_USER%</span> <span class="var">%EPW_FILE%</span> <span class="var">%EPM_URL%</span> <span class="var">%EPM_DOMAIN%</span>
+<span class="kw">if</span> <span class="var">%ERRORLEVEL%</span> NEQ 0 (
+    echo ERROR: Login failed. Check credentials and URL.
+    exit /b 1
+)
+
+<span class="cm">:: ... your commands here ...</span>
+
+<span class="cm">:: LOGOUT</span>
+epmautomate logout
+echo Script completed successfully.</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       02 — PIPELINE ORCHESTRATION
+  ══════════════════════════════════════ -->
+  <div class="section" id="pipeline">
+    <div class="section-header">
+      <div class="section-icon">⚙️</div>
+      <div>
+        <h2>Pipeline Orchestration</h2>
+        <div class="sh-sub">Run FDMEE / Data Exchange pipelines end-to-end</div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">03</span>
+        <span class="script-name">Run Full Data Pipeline</span>
+        <span class="script-desc">End-to-end pipeline: extract → load → calc</span>
+      </div>
+      <div class="script-body">
+        <p>Runs a complete FDMEE data pipeline — connects to source ERP, extracts data, imports into EPM, and triggers post-load calculations. Used in production for daily AP invoice loads and actuals pipelines.</p>
+        <div class="note"><p><strong>Tip:</strong> Always check job status after runDataRule — it returns immediately; use checkJobStatus in a loop to wait for completion.</p></div>
+        <div class="code-block">
+          <div class="code-title">run-pipeline.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Run a full FDMEE data pipeline with status monitoring</span>
+<span class="kw">@echo off</span>
+<span class="kw">setlocal</span>
+
+<span class="kw">set</span> <span class="var">PIPELINE_NAME</span>=PIPAPCIGJAE
+<span class="kw">set</span> <span class="var">PERIOD</span>=Nov-26
+<span class="kw">set</span> <span class="var">LOAD_MODE</span>=REPLACE
+<span class="kw">set</span> <span class="var">IMPORT_MODE</span>=STORE_DATA
+
+call login-wrapper.bat
+
+echo Running pipeline: <span class="var">%PIPELINE_NAME%</span> for period <span class="var">%PERIOD%</span>
+epmautomate runDataRule <span class="var">%PIPELINE_NAME%</span> <span class="var">%PERIOD%</span> <span class="var">%PERIOD%</span> <span class="var">%LOAD_MODE%</span> <span class="var">%IMPORT_MODE%</span>
+
+<span class="kw">if</span> <span class="var">%ERRORLEVEL%</span> NEQ 0 (
+    echo PIPELINE FAILED. Check EPM job console.
+    epmautomate logout
+    exit /b 1
+)
+
+echo Pipeline completed. Running post-load calculation...
+epmautomate runBusinessRule <span class="str">"105.PPDCLC - Process Invoice"</span>
+
+epmautomate logout
+echo Done.</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">04</span>
+        <span class="script-name">Daily Scheduled Orchestration</span>
+        <span class="script-desc">Full daily run: metadata + data + calc + export</span>
+      </div>
+      <div class="script-body">
+        <p>Production daily orchestration script — runs the full sequence: import metadata, load data, trigger calculations, and export results. Designed to run via Windows Task Scheduler or Linux cron.</p>
+        <div class="code-block">
+          <div class="code-title">daily-orchestration.bat <span class="file-badge">Windows — Task Scheduler</span></div>
+          <pre><code><span class="cm">:: Daily EPM orchestration — scheduled via Windows Task Scheduler
+:: Schedule: 6:00 AM daily</span>
+<span class="kw">@echo off</span>
+<span class="kw">set</span> <span class="var">LOGFILE</span>=C:\EPMScripts\logs\daily_%date:~-4,4%%date:~-10,2%%date:~-7,2%.log
+
+echo %date% %time% - Starting daily EPM orchestration >> <span class="var">%LOGFILE%</span>
+
+call login-wrapper.bat >> <span class="var">%LOGFILE%</span> 2>&amp;1
+
+<span class="cm">:: Step 1 — Import dimension metadata from flat files</span>
+echo Step 1: Importing metadata >> <span class="var">%LOGFILE%</span>
+epmautomate importMetadata <span class="str">"Import_Account.csv"</span>  APPLICATION=PSPLAN >> <span class="var">%LOGFILE%</span>
+epmautomate importMetadata <span class="str">"Import_Dept.csv"</span>     APPLICATION=PSPLAN >> <span class="var">%LOGFILE%</span>
+epmautomate importMetadata <span class="str">"Import_Employee.csv"</span> APPLICATION=PSPLAN >> <span class="var">%LOGFILE%</span>
+
+<span class="cm">:: Step 2 — Run actuals data pipeline</span>
+echo Step 2: Loading actuals >> <span class="var">%LOGFILE%</span>
+epmautomate runDataRule <span class="str">"AllActuals"</span> Nov-26 Nov-26 REPLACE STORE_DATA >> <span class="var">%LOGFILE%</span>
+
+<span class="cm">:: Step 3 — Trigger full recalculation</span>
+echo Step 3: Running calculations >> <span class="var">%LOGFILE%</span>
+epmautomate runBusinessRule <span class="str">"ruleset_Intraday_Full_Calculation"</span> >> <span class="var">%LOGFILE%</span>
+
+<span class="cm">:: Step 4 — Refresh cube</span>
+echo Step 4: Refreshing cube >> <span class="var">%LOGFILE%</span>
+epmautomate refreshCube PSPLAN >> <span class="var">%LOGFILE%</span>
+
+epmautomate logout >> <span class="var">%LOGFILE%</span>
+echo %date% %time% - Orchestration complete >> <span class="var">%LOGFILE%</span></code></pre>
+        </div>
+        <div class="code-block">
+          <div class="code-title">daily-orchestration.sh <span class="file-badge">Linux — Cron</span></div>
+          <pre><code><span class="cm">#!/bin/bash
+# Daily EPM orchestration — add to crontab:
+# 0 6 * * * /opt/epm/scripts/daily-orchestration.sh</span>
+
+LOGFILE=<span class="str">"/opt/epm/logs/daily_$(date +%Y%m%d).log"</span>
+EPM_URL=<span class="str">"https://your-environment.epm.us-ashburn-1.ocs.oraclecloud.com"</span>
+EPM_USER=<span class="str">"service_account@company.com"</span>
+EPW_FILE=<span class="str">"/opt/epm/credentials.epw"</span>
+DOMAIN=<span class="str">"your_domain"</span>
+
+epmautomate login <span class="var">$EPM_USER</span> <span class="var">$EPW_FILE</span> <span class="var">$EPM_URL</span> <span class="var">$DOMAIN</span> >> <span class="var">$LOGFILE</span> 2>&amp;1
+
+epmautomate importMetadata <span class="str">"Import_Account.csv"</span> APPLICATION=PSPLAN >> <span class="var">$LOGFILE</span>
+epmautomate runDataRule <span class="str">"AllActuals"</span> Nov-26 Nov-26 REPLACE STORE_DATA >> <span class="var">$LOGFILE</span>
+epmautomate runBusinessRule <span class="str">"ruleset_Intraday_Full_Calculation"</span> >> <span class="var">$LOGFILE</span>
+epmautomate refreshCube PSPLAN >> <span class="var">$LOGFILE</span>
+
+epmautomate logout >> <span class="var">$LOGFILE</span>
+echo "$(date) - Done" >> <span class="var">$LOGFILE</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       03 — METADATA
+  ══════════════════════════════════════ -->
+  <div class="section" id="metadata">
+    <div class="section-header">
+      <div class="section-icon">🗂️</div>
+      <div>
+        <h2>Metadata Management</h2>
+        <div class="sh-sub">Import and export dimension members via flat files</div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">05</span>
+        <span class="script-name">Import Metadata from Flat Files</span>
+        <span class="script-desc">Load dimension members from CSV into EPM</span>
+      </div>
+      <div class="script-body">
+        <p>Uploads generated dimension CSV files to EPM Cloud inbox, then imports them. Designed for the metadata automation pattern where a Groovy rule generates Import_* files from the source extract.</p>
+        <div class="code-block">
+          <div class="code-title">import-metadata.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Import dimension metadata from flat files
+:: Assumes CSV files are pre-generated by upstream Groovy/process</span>
+<span class="kw">@echo off</span>
+<span class="kw">set</span> <span class="var">META_DIR</span>=C:\EPMScripts\metadata
+
+call login-wrapper.bat
+
+<span class="cm">:: Upload files to EPM inbox first</span>
+epmautomate uploadFile <span class="var">%META_DIR%</span>\Import_Invoice.csv
+epmautomate uploadFile <span class="var">%META_DIR%</span>\Import_Line.csv
+epmautomate uploadFile <span class="var">%META_DIR%</span>\Import_Distribution.csv
+epmautomate uploadFile <span class="var">%META_DIR%</span>\Import_Supplier.csv
+
+<span class="cm">:: Import each dimension</span>
+epmautomate importMetadata <span class="str">"Import_Invoice.csv"</span>      APPLICATION=CIGJAE
+epmautomate importMetadata <span class="str">"Import_Line.csv"</span>         APPLICATION=CIGJAE
+epmautomate importMetadata <span class="str">"Import_Distribution.csv"</span> APPLICATION=CIGJAE
+epmautomate importMetadata <span class="str">"Import_Supplier.csv"</span>     APPLICATION=CIGJAE
+
+echo Metadata import complete.
+epmautomate logout</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">06</span>
+        <span class="script-name">Export Dimension Metadata</span>
+        <span class="script-desc">Extract dimension members to CSV for review or migration</span>
+      </div>
+      <div class="script-body">
+        <div class="code-block">
+          <div class="code-title">export-metadata.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Export dimension members to CSV for review or cross-environment migration</span>
+<span class="kw">@echo off</span>
+<span class="kw">set</span> <span class="var">OUT_DIR</span>=C:\EPMScripts\exports\metadata
+
+call login-wrapper.bat
+
+epmautomate exportMetadata <span class="str">"Account"</span>   <span class="str">"Export_Account.csv"</span>   APPLICATION=PSPLAN
+epmautomate exportMetadata <span class="str">"Department"</span> <span class="str">"Export_Dept.csv"</span>     APPLICATION=PSPLAN
+epmautomate exportMetadata <span class="str">"Entity"</span>    <span class="str">"Export_Entity.csv"</span>   APPLICATION=PSPLAN
+
+<span class="cm">:: Download exported files from EPM outbox to local folder</span>
+epmautomate downloadFile <span class="str">"Export_Account.csv"</span>   <span class="var">%OUT_DIR%</span>
+epmautomate downloadFile <span class="str">"Export_Dept.csv"</span>      <span class="var">%OUT_DIR%</span>
+epmautomate downloadFile <span class="str">"Export_Entity.csv"</span>    <span class="var">%OUT_DIR%</span>
+
+echo Metadata exported to: <span class="var">%OUT_DIR%</span>
+epmautomate logout</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       04 — BUSINESS RULES
+  ══════════════════════════════════════ -->
+  <div class="section" id="rules">
+    <div class="section-header">
+      <div class="section-icon">⚡</div>
+      <div>
+        <h2>Business Rule Execution</h2>
+        <div class="sh-sub">Run Groovy rules, calc scripts, and rulesets with runtime prompts</div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">07</span>
+        <span class="script-name">Run Business Rule with Prompts</span>
+        <span class="script-desc">Execute a rule and pass runtime prompt values</span>
+      </div>
+      <div class="script-body">
+        <p>Runs a named business rule and passes runtime prompt values (e.g. year, period, scenario). Essential for rules that require user input when run manually but need automated values in scheduled runs.</p>
+        <div class="code-block">
+          <div class="code-title">run-business-rule.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Run a business rule with runtime prompt values</span>
+<span class="kw">@echo off</span>
+
+call login-wrapper.bat
+
+<span class="cm">:: Run a rule — simple (no prompts)</span>
+epmautomate runBusinessRule <span class="str">"105.PPDCLC - Process Invoice"</span>
+
+<span class="cm">:: Run a rule with runtime prompts (key=value pairs)</span>
+epmautomate runBusinessRule <span class="str">"092.PPDCLC - Export and Deliver AHCS Transactions"</span> ^
+    <span class="str">"RTP_Year=FY26"</span> ^
+    <span class="str">"RTP_Period=Nov"</span> ^
+    <span class="str">"RTP_Region=US"</span>
+
+<span class="cm">:: Run a ruleset (sequential rule execution)</span>
+epmautomate runBusinessRule <span class="str">"ruleset_Intraday_Full_Calculation"</span>
+
+epmautomate logout</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">08</span>
+        <span class="script-name">Run All-Region Export</span>
+        <span class="script-desc">Loop through regions and run export rule for each</span>
+      </div>
+      <div class="script-body">
+        <p>Loops through all regional values and runs the export rule once per region — a common pattern for multi-region EPM applications where data is segregated by region.</p>
+        <div class="code-block">
+          <div class="code-title">run-regional-export.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Run export rule for each region — US, EMEA, APAC</span>
+<span class="kw">@echo off</span>
+<span class="kw">set</span> <span class="var">RULE</span>=925.PPDCLC - Export Amortization Schedule_DCL
+
+call login-wrapper.bat
+
+<span class="kw">for</span> <span class="var">%%R</span> in (US EMEA APAC) do (
+    echo Running export for region: <span class="var">%%R</span>
+    epmautomate runBusinessRule <span class="str">"%RULE%"</span> <span class="str">"RTP_Region=%%R"</span>
+    <span class="kw">if</span> <span class="var">%ERRORLEVEL%</span> NEQ 0 (
+        echo ERROR on region <span class="var">%%R</span>. Continuing...
+    ) else (
+        echo Region <span class="var">%%R</span> exported successfully.
+    )
+)
+
+<span class="cm">:: Download all export files from EPM outbox</span>
+epmautomate downloadFile <span class="str">"Amortization Schedule_US.csv"</span>   C:\exports
+epmautomate downloadFile <span class="str">"Amortization Schedule_EMEA.csv"</span> C:\exports
+epmautomate downloadFile <span class="str">"Amortization Schedule_APAC.csv"</span> C:\exports
+
+epmautomate logout</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       05 — DATA IMPORT / EXPORT
+  ══════════════════════════════════════ -->
+  <div class="section" id="data">
+    <div class="section-header">
+      <div class="section-icon">📊</div>
+      <div>
+        <h2>Data Import &amp; Export</h2>
+        <div class="sh-sub">Load and extract data slices, files, and reports</div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">09</span>
+        <span class="script-name">Upload and Load Data File</span>
+        <span class="script-desc">Push a flat file data load directly into EPM</span>
+      </div>
+      <div class="script-body">
+        <div class="code-block">
+          <div class="code-title">load-data-file.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Upload a data CSV and load it via a Data Management load rule</span>
+<span class="kw">@echo off</span>
+<span class="kw">set</span> <span class="var">DATA_FILE</span>=C:\EPMScripts\data\actuals_nov26.csv
+<span class="kw">set</span> <span class="var">LOAD_RULE</span>=GL_Actuals_Load
+<span class="kw">set</span> <span class="var">PERIOD</span>=Nov-26
+
+call login-wrapper.bat
+
+<span class="cm">:: Upload data file to EPM inbox</span>
+epmautomate uploadFile <span class="var">%DATA_FILE%</span>
+
+<span class="cm">:: Run the load rule against the uploaded file</span>
+epmautomate runDataRule <span class="var">%LOAD_RULE%</span> <span class="var">%PERIOD%</span> <span class="var">%PERIOD%</span> REPLACE STORE_DATA
+
+echo Data load complete.
+epmautomate logout</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">10</span>
+        <span class="script-name">Export Data Slice to CSV</span>
+        <span class="script-desc">Extract a data slice from the cube to a flat file</span>
+      </div>
+      <div class="script-body">
+        <div class="code-block">
+          <div class="code-title">export-data-slice.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Export a data slice from the cube to CSV
+:: Useful for validation, reporting, or cross-system reconciliation</span>
+<span class="kw">@echo off</span>
+<span class="kw">set</span> <span class="var">OUT_FILE</span>=DataExport_Nov26.csv
+<span class="kw">set</span> <span class="var">OUT_DIR</span>=C:\EPMScripts\exports\data
+
+call login-wrapper.bat
+
+epmautomate exportData ^
+    applicationName=PSPLAN ^
+    planType=PSPLAN ^
+    exportFileName=<span class="var">%OUT_FILE%</span> ^
+    <span class="str">"Scenario=Actual"</span> ^
+    <span class="str">"Version=Final"</span> ^
+    <span class="str">"Year=FY26"</span> ^
+    <span class="str">"Period=Nov"</span>
+
+<span class="cm">:: Download the exported file</span>
+epmautomate downloadFile <span class="var">%OUT_FILE%</span> <span class="var">%OUT_DIR%</span>
+
+echo Data exported to: <span class="var">%OUT_DIR%</span>\<span class="var">%OUT_FILE%</span>
+epmautomate logout</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       06 — BACKUP / RESTORE
+  ══════════════════════════════════════ -->
+  <div class="section" id="backup">
+    <div class="section-header">
+      <div class="section-icon">💾</div>
+      <div>
+        <h2>Backup &amp; Restore (LCM)</h2>
+        <div class="sh-sub">Export and import full LCM snapshots for environment management</div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">11</span>
+        <span class="script-name">Full LCM Backup</span>
+        <span class="script-desc">Export complete application snapshot to a dated zip</span>
+      </div>
+      <div class="script-body">
+        <p>Creates a full LCM export of the application and downloads it locally with a date-stamped filename. Run before any significant deployment or migration. Used in production as a pre-go-live safety checkpoint.</p>
+        <div class="code-block">
+          <div class="code-title">backup-lcm.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Full LCM backup — exports and downloads a dated snapshot</span>
+<span class="kw">@echo off</span>
+<span class="kw">set</span> <span class="var">APP</span>=CIGJAE
+<span class="kw">set</span> <span class="var">BACKUP_DIR</span>=C:\EPMScripts\backups
+<span class="kw">set</span> <span class="var">DATE_STAMP</span>=%date:~-4,4%%date:~-10,2%%date:~-7,2%
+<span class="kw">set</span> <span class="var">BACKUP_FILE</span>=<span class="var">%APP%</span>_Backup_<span class="var">%DATE_STAMP%</span>.zip
+
+call login-wrapper.bat
+
+echo Creating LCM snapshot: <span class="var">%BACKUP_FILE%</span>
+epmautomate exportSnapshot <span class="var">%BACKUP_FILE%</span>
+
+<span class="cm">:: Wait for export to complete, then download</span>
+epmautomate downloadFile <span class="var">%BACKUP_FILE%</span> <span class="var">%BACKUP_DIR%</span>
+
+echo Backup saved: <span class="var">%BACKUP_DIR%</span>\<span class="var">%BACKUP_FILE%</span>
+epmautomate logout</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">12</span>
+        <span class="script-name">Import LCM Snapshot</span>
+        <span class="script-desc">Restore an LCM zip to an environment</span>
+      </div>
+      <div class="script-body">
+        <div class="code-block">
+          <div class="code-title">restore-lcm.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Import (restore) an LCM snapshot to an EPM environment
+:: CAUTION: This overwrites existing application artifacts</span>
+<span class="kw">@echo off</span>
+<span class="kw">set</span> <span class="var">SNAPSHOT_FILE</span>=C:\EPMScripts\backups\CIGJAE_Backup_20261106.zip
+<span class="kw">set</span> <span class="var">SNAPSHOT_NAME</span>=CIGJAE_Backup_20261106.zip
+
+call login-wrapper.bat
+
+<span class="cm">:: Upload snapshot to EPM</span>
+epmautomate uploadFile <span class="var">%SNAPSHOT_FILE%</span>
+
+<span class="cm">:: Import the snapshot (restores all artifacts: rules, forms, dims, security)</span>
+epmautomate importSnapshot <span class="var">%SNAPSHOT_NAME%</span>
+
+echo LCM restore complete. Verify application artifacts before use.
+epmautomate logout</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="script-card">
+      <div class="script-header">
+        <span class="script-num">13</span>
+        <span class="script-name">Cross-Environment Migration</span>
+        <span class="script-desc">Export from source, import to target pod</span>
+      </div>
+      <div class="script-body">
+        <p>Automates the full migration cycle: backup source environment, download locally, upload to target environment, and import. Used for pod01-test → production migrations.</p>
+        <div class="code-block">
+          <div class="code-title">migrate-env.bat <span class="file-badge">Windows</span></div>
+          <pre><code><span class="cm">:: Migrate LCM from source (test) to target (prod) environment</span>
+<span class="kw">@echo off</span>
+<span class="kw">set</span> <span class="var">SNAPSHOT</span>=CIGJAE_Migration_%date:~-4,4%%date:~-10,2%%date:~-7,2%.zip
+<span class="kw">set</span> <span class="var">LOCAL_DIR</span>=C:\EPMScripts\migrations
+
+<span class="cm">:: STEP 1 — Export from SOURCE (test pod)</span>
+epmautomate login %SRC_USER% %SRC_EPW% %SRC_URL% %SRC_DOMAIN%
+epmautomate exportSnapshot <span class="var">%SNAPSHOT%</span>
+epmautomate downloadFile <span class="var">%SNAPSHOT%</span> <span class="var">%LOCAL_DIR%</span>
+epmautomate logout
+
+<span class="cm">:: STEP 2 — Import to TARGET (prod)</span>
+epmautomate login %TGT_USER% %TGT_EPW% %TGT_URL% %TGT_DOMAIN%
+epmautomate uploadFile <span class="var">%LOCAL_DIR%</span>\<span class="var">%SNAPSHOT%</span>
+epmautomate importSnapshot <span class="var">%SNAPSHOT%</span>
+epmautomate logout
+
+echo Migration complete: <span class="var">%SNAPSHOT%</span></code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- closing -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:32px;text-align:center;margin-bottom:50px;">
+    <h3 style="font-size:18px;margin-bottom:12px;">About These Scripts</h3>
+    <p style="color:var(--muted);max-width:680px;margin:0 auto 20px;font-size:14px;">These scripts are based on patterns developed across multiple Oracle EPM Cloud implementations covering EPBCS Planning, EPBCS Freeform, and PCMCS. They are provided as reference templates — update environment URLs, usernames, application names, and rule names to match your environment before use. Always test in a non-production environment first.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <span style="background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);border-radius:8px;padding:7px 16px;font-size:13px;color:var(--accent)">EPM Automate CLI</span>
+      <span style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);border-radius:8px;padding:7px 16px;font-size:13px;color:var(--accent3)">Windows Batch</span>
+      <span style="background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.3);border-radius:8px;padding:7px 16px;font-size:13px;color:var(--accent2)">Linux / Bash</span>
+      <span style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:7px 16px;font-size:13px;color:var(--accent4)">Oracle Cloud (OCI)</span>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Oracle EPM Automate Script Library &nbsp;|&nbsp; Uday Kumar Kotha &nbsp;|&nbsp; ukotha@hcg.com &nbsp;|&nbsp; Huron Consulting Group &nbsp;|&nbsp; November 6, 2026<br>
+  <span style="color:var(--muted2);margin-top:6px;display:block;">Reference templates only — test in non-production environments. No client data included.</span>
+</footer>
+
+</body>
+</html>
